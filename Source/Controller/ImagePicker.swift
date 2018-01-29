@@ -38,6 +38,20 @@ public class ImagePicker: UINavigationController {
             }
         }
     }
+    
+    var allowSelection: AllowSelection? {
+        didSet {
+            self.photosViewController.shouldAllowSelection = { (photo) in
+                self.didUpdateSelections()
+                if let allowSelection = self.allowSelection {
+                    return (allowSelection(photo))
+                } else {
+                    return true
+                }
+            }
+        }
+    }
+    
     var onDeselect: PhotoSelection? {
         didSet {
             self.photosViewController.onDeselect = { (photo) in
@@ -56,6 +70,9 @@ public class ImagePicker: UINavigationController {
         }
         vc.onDeselect = { (photo) in
             self.didUpdateSelections()
+        }
+        vc.shouldAllowSelection = { (photo) in
+            return false
         }
         return vc
     }()
@@ -185,7 +202,7 @@ extension ImagePicker: AlbumsViewControllerDelegate {
         photosViewController = PhotosViewController(album: didSelect, selections: old.selections, settings: old.settings)
         photosViewController.onDeselect = old.onDeselect
         photosViewController.onSelect = old.onSelect
-        
+        photosViewController.shouldAllowSelection = old.shouldAllowSelection
         viewControllers = [photosViewController]
     }
     

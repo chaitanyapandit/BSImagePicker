@@ -26,7 +26,8 @@ import Photos
 class PhotosViewController: UICollectionViewController {
     var onSelect: PhotoSelection?
     var onDeselect: PhotoSelection?
-
+    var shouldAllowSelection: AllowSelection?
+    
     fileprivate(set) var selections = [Photo]()
     let album: Album
     let settings: Settings
@@ -133,7 +134,12 @@ extension PhotosViewController {
         if photoSelected(at: indexPath) {
             deselectPhoto(at: indexPath, in: collectionView)
         } else {
-            selectPhoto(at: indexPath, in: collectionView)
+            let allowed = shouldAllowSelection(at: indexPath, in: collectionView)
+            if allowed {
+                selectPhoto(at: indexPath, in: collectionView)
+            } else {
+                deselectPhoto(at: indexPath, in: collectionView)
+            }
         }
         
         // Return false to stop collection view of keeping track of whats selected or not.
@@ -153,6 +159,14 @@ extension PhotosViewController {
         return selections.contains(photo)
     }
 
+    func shouldAllowSelection(at indexPath: IndexPath, in collectionView: UICollectionView) -> Bool {
+        let photo = album[(indexPath as NSIndexPath).row]
+        if let allowSelection = shouldAllowSelection {
+            return allowSelection(photo)
+        }
+        return false
+    }
+    
     func selectPhoto(at indexPath: IndexPath, in collectionView: UICollectionView) {
         // Add selection
         let photo = album[(indexPath as NSIndexPath).row]

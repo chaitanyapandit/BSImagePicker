@@ -22,4 +22,6 @@
 
 public typealias PhotoSelection = (Photo) -> Void
 
+public typealias AllowSelection = (Photo) -> Bool
+
 public typealias PhotosSelection = ([Photo]) -> Void

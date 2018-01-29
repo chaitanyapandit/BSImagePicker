@@ -39,7 +39,10 @@ class ViewController: UIViewController {
         presentImagePicker(vc,
             onSelect: { (photo) in
                 print("Select")
-            }, onDeselect: { (photo) in
+        }, shouldAllowSelection: { (photo) in
+            
+            return true
+        }, onDeselect: { (photo) in
                 print("deselect")
             }, onCancel: { (photos) in
                 print("cancel")

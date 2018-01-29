@@ -23,12 +23,14 @@
 import UIKit
 
 public extension UIViewController {
-    func presentImagePicker(_ imagePicker: ImagePicker, animated: Bool = true, onSelect: PhotoSelection?, onDeselect: PhotoSelection?, onCancel: PhotosSelection?, onFinish: PhotosSelection?, completion: (() -> Void)? = nil) {
+    func presentImagePicker(_ imagePicker: ImagePicker, animated: Bool = true, onSelect: PhotoSelection?, shouldAllowSelection: AllowSelection?, onDeselect: PhotoSelection?, onCancel: PhotosSelection?, onFinish: PhotosSelection?, completion: (() -> Void)? = nil) {
         // Pass along closures
         imagePicker.onSelect = onSelect
+        imagePicker.allowSelection = shouldAllowSelection
         imagePicker.onDeselect = onDeselect
         imagePicker.onCancel = onCancel
         imagePicker.onFinish = onFinish
+        
         
         // Present!
         present(imagePicker, animated: animated, completion: completion)
