@@ -31,32 +31,28 @@ final class CameraCell: UICollectionViewCell {
         super.awakeFromNib()
         
         // Don't trigger camera access for the background
-        guard AVCaptureDevice.authorizationStatus(for: AVMediaType.video) == .authorized else {
+        guard AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) == .authorized else {
             return
         }
         
         do {
             // Prepare avcapture session
             session = AVCaptureSession()
-            session?.sessionPreset = AVCaptureSession.Preset.medium
+            session?.sessionPreset = AVCaptureSessionPresetMedium
             
             // Hook upp device
-            let device = AVCaptureDevice.default(for: AVMediaType.video)
-            let input = try AVCaptureDeviceInput(device: device!)
+            let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+            let input = try AVCaptureDeviceInput(device: device)
             session?.addInput(input)
             
             // Setup capture layer
-
-            guard session != nil else {
-                return
+            if let captureLayer = AVCaptureVideoPreviewLayer(session: session) {
+                captureLayer.frame = bounds
+                captureLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+                cameraBackground.layer.addSublayer(captureLayer)
+                
+                self.captureLayer = captureLayer
             }
-          
-            let captureLayer = AVCaptureVideoPreviewLayer(session: session!)
-            captureLayer.frame = bounds
-            captureLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-            cameraBackground.layer.addSublayer(captureLayer)
-
-            self.captureLayer = captureLayer
         } catch {
             session = nil
         }
