@@ -53,7 +53,7 @@ final class PhotosViewController : UICollectionViewController {
     
     var doneBarButton: UIBarButtonItem?
     var cancelBarButton: UIBarButtonItem?
-    var albumTitleView: AlbumTitleView?
+    var albumTitleView: UIButton?
     
     let expandAnimator = ZoomAnimator()
     let shrinkAnimator = ZoomAnimator()
@@ -116,7 +116,7 @@ final class PhotosViewController : UICollectionViewController {
         doneBarButton?.action = #selector(PhotosViewController.doneButtonPressed(_:))
         cancelBarButton?.target = self
         cancelBarButton?.action = #selector(PhotosViewController.cancelButtonPressed(_:))
-        albumTitleView?.albumButton?.addTarget(self, action: #selector(PhotosViewController.albumButtonPressed(_:)), for: .touchUpInside)
+        albumTitleView?.addTarget(self, action: #selector(PhotosViewController.albumButtonPressed(_:)), for: .touchUpInside)
         navigationItem.leftBarButtonItem = cancelBarButton
         navigationItem.rightBarButtonItem = doneBarButton
         navigationItem.titleView = albumTitleView
@@ -290,13 +290,12 @@ final class PhotosViewController : UICollectionViewController {
         return isRightButton
     }
     
-    func updateAlbumTitle(_ album: PHAssetCollection) {
-        if let title = album.localizedTitle {
-            // Update album title
-            albumTitleView?.albumTitle = title
-        }
+    @objc func updateAlbumTitle(_ album: PHAssetCollection) {
+        guard let title = album.localizedTitle else { return }
+        // Update album title
+        albumTitleView?.setAlbumTitle(title)
     }
-    
+
   func initializePhotosDataSource(_ album: PHAssetCollection, selections: PHFetchResult<PHAsset>? = nil) {
         // Set up a photo data source with album
         let fetchOptions = PHFetchOptions()
