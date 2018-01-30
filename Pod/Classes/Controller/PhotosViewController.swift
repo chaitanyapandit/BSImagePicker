@@ -46,6 +46,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 final class PhotosViewController : UICollectionViewController {    
     @objc var selectionClosure: ((_ asset: PHAsset) -> Void)?
+    @objc var shouldAllowSelectionClosure: ((_ asset: PHAsset) -> Bool)?
     @objc var deselectionClosure: ((_ asset: PHAsset) -> Void)?
     @objc var cancelClosure: ((_ assets: [PHAsset]) -> Void)?
     @objc var finishClosure: ((_ assets: [PHAsset]) -> Void)?
@@ -303,6 +304,11 @@ extension PhotosViewController {
         guard let cell = collectionView.cellForItem(at: indexPath) as? PhotoCell else { return false }
         let asset = photosDataSource.fetchResult.object(at: indexPath.row)
 
+        // Verify if the user has entered any selection condition
+        if let selectionClosure = shouldAllowSelectionClosure {
+            return selectionClosure(asset)
+        }
+        
         // Select or deselect?
         if let index = photosDataSource.selections.index(of: asset) { // Deselect
             // Deselect asset
