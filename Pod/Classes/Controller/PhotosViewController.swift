@@ -46,6 +46,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 final class PhotosViewController : UICollectionViewController {    
     var selectionClosure: ((_ asset: PHAsset) -> Void)?
+    var shouldAllowSelectionClosure: ((_ asset: PHAsset) -> Bool)?
     var deselectionClosure: ((_ asset: PHAsset) -> Void)?
     var cancelClosure: ((_ assets: [PHAsset]) -> Void)?
     var finishClosure: ((_ assets: [PHAsset]) -> Void)?
@@ -379,25 +380,34 @@ extension PhotosViewController {
                 }
             }
         } else if photosDataSource.selections.count < settings.maxNumberOfSelections { // Select
-            // Select asset if not already selected
-            photosDataSource.selections.append(asset)
-
-            // Set selection number
-            if let selectionCharacter = settings.selectionCharacter {
-                cell.selectionString = String(selectionCharacter)
-            } else {
-                cell.selectionString = String(photosDataSource.selections.count)
+            
+            var allowSelection = true
+            
+            if let allowSelectionClosure = shouldAllowSelectionClosure {
+                allowSelection = allowSelectionClosure(asset)
             }
-
-            cell.photoSelected = true
-
-            // Update done button
-            updateDoneButton()
-
-            // Call selection closure
-            if let closure = selectionClosure {
-                DispatchQueue.global().async {
-                    closure(asset)
+            
+            if allowSelection {
+                // Select asset if not already selected
+                photosDataSource.selections.append(asset)
+                
+                // Set selection number
+                if let selectionCharacter = settings.selectionCharacter {
+                    cell.selectionString = String(selectionCharacter)
+                } else {
+                    cell.selectionString = String(photosDataSource.selections.count)
+                }
+                
+                cell.photoSelected = true
+                
+                // Update done button
+                updateDoneButton()
+                
+                // Call selection closure
+                if let closure = selectionClosure {
+                    DispatchQueue.global().async {
+                        closure(asset)
+                    }
                 }
             }
         }
