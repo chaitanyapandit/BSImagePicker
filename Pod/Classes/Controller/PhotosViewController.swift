@@ -303,11 +303,6 @@ extension PhotosViewController {
         // We need a cell
         guard let cell = collectionView.cellForItem(at: indexPath) as? PhotoCell else { return false }
         let asset = photosDataSource.fetchResult.object(at: indexPath.row)
-
-        // Verify if the user has entered any selection condition
-        if let selectionClosure = shouldAllowSelectionClosure {
-            return selectionClosure(asset)
-        }
         
         // Select or deselect?
         if let index = photosDataSource.selections.index(of: asset) { // Deselect
@@ -338,25 +333,32 @@ extension PhotosViewController {
                 }
             }
         } else if photosDataSource.selections.count < settings.maxNumberOfSelections { // Select
-            // Select asset if not already selected
-            photosDataSource.selections.append(asset)
-
-            // Set selection number
-            if let selectionCharacter = settings.selectionCharacter {
-                cell.selectionString = String(selectionCharacter)
-            } else {
-                cell.selectionString = String(photosDataSource.selections.count)
+            var allowedSelection = true
+            // Verify if the user has entered any selection condition
+            if let selectionClosure = shouldAllowSelectionClosure {
+                allowedSelection = selectionClosure(asset)
             }
-
-            cell.photoSelected = true
-
-            // Update done button
-            updateDoneButton()
-
-            // Call selection closure
-            if let closure = selectionClosure {
-                DispatchQueue.global().async {
-                    closure(asset)
+            if allowedSelection {
+                // Select asset if not already selected
+                photosDataSource.selections.append(asset)
+                
+                // Set selection number
+                if let selectionCharacter = settings.selectionCharacter {
+                    cell.selectionString = String(selectionCharacter)
+                } else {
+                    cell.selectionString = String(photosDataSource.selections.count)
+                }
+                
+                cell.photoSelected = true
+                
+                // Update done button
+                updateDoneButton()
+                
+                // Call selection closure
+                if let closure = selectionClosure {
+                    DispatchQueue.global().async {
+                        closure(asset)
+                    }
                 }
             }
         }
