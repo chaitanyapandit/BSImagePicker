@@ -31,18 +31,18 @@ final class CameraCell: UICollectionViewCell {
         super.awakeFromNib()
         
         // Don't trigger camera access for the background
-        guard AVCaptureDevice.authorizationStatus(for: AVMediaType.video) == .authorized else {
+        guard AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) == .authorized else {
             return
         }
         
         do {
             // Prepare avcapture session
             session = AVCaptureSession()
-            session?.sessionPreset = AVCaptureSession.Preset.medium
+            session?.sessionPreset = AVCaptureSessionPresetMedium
             
             // Hook upp device
             
-            if let device = AVCaptureDevice.default(for: AVMediaType.video) {
+            if let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo) {
                 let input = try AVCaptureDeviceInput(device: device)
                 session?.addInput(input)
                 
@@ -50,7 +50,7 @@ final class CameraCell: UICollectionViewCell {
                 if let session = session,
                     let captureLayer = AVCaptureVideoPreviewLayer(session: session) as AVCaptureVideoPreviewLayer? {
                     captureLayer.frame = bounds
-                    captureLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                    captureLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
                     cameraBackground.layer.addSublayer(captureLayer)
                     
                     self.captureLayer = captureLayer
