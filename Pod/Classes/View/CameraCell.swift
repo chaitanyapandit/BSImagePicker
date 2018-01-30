@@ -41,22 +41,21 @@ final class CameraCell: UICollectionViewCell {
             session?.sessionPreset = AVCaptureSession.Preset.medium
             
             // Hook upp device
-            let device = AVCaptureDevice.default(for: AVMediaType.video)
-            let input = try AVCaptureDeviceInput(device: device!)
-            session?.addInput(input)
             
-            // Setup capture layer
-
-            guard session != nil else {
-                return
+            if let device = AVCaptureDevice.default(for: AVMediaType.video) {
+                let input = try AVCaptureDeviceInput(device: device)
+                session?.addInput(input)
+                
+                // Setup capture layer
+                if let session = session,
+                    let captureLayer = AVCaptureVideoPreviewLayer(session: session) as AVCaptureVideoPreviewLayer? {
+                    captureLayer.frame = bounds
+                    captureLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                    cameraBackground.layer.addSublayer(captureLayer)
+                    
+                    self.captureLayer = captureLayer
+                }
             }
-          
-            let captureLayer = AVCaptureVideoPreviewLayer(session: session!)
-            captureLayer.frame = bounds
-            captureLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-            cameraBackground.layer.addSublayer(captureLayer)
-
-            self.captureLayer = captureLayer
         } catch {
             session = nil
         }
