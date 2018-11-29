@@ -33,7 +33,9 @@ class ViewController: UIViewController {
         bs_presentImagePickerController(vc, animated: true,
             select: { (asset: PHAsset) -> Void in
                 print("Selected: \(asset)")
-            }, deselect: { (asset: PHAsset) -> Void in
+        }, shouldAllowSelection: { _ in
+            return true
+        }, deselect: { (asset: PHAsset) -> Void in
                 print("Deselected: \(asset)")
             }, cancel: { (assets: [PHAsset]) -> Void in
                 print("Cancel: \(assets)")
@@ -71,7 +73,9 @@ class ViewController: UIViewController {
         bs_presentImagePickerController(vc, animated: true,
             select: { (asset: PHAsset) -> Void in
                 print("Selected: \(asset)")
-            }, deselect: { (asset: PHAsset) -> Void in
+        }, shouldAllowSelection: { _ in
+            return true
+        }, deselect: { (asset: PHAsset) -> Void in
                 print("Deselected: \(asset)")
             }, cancel: { (assets: [PHAsset]) -> Void in
                 print("Cancel: \(assets)")
@@ -98,7 +102,9 @@ class ViewController: UIViewController {
         bs_presentImagePickerController(vc, animated: true,
           select: { (asset: PHAsset) -> Void in
             print("Selected: \(asset)")
-          }, deselect: { (asset: PHAsset) -> Void in
+        }, shouldAllowSelection: { _ in
+            return true
+        }, deselect: { (asset: PHAsset) -> Void in
             print("Deselected: \(asset)")
           }, cancel: { (assets: [PHAsset]) -> Void in
             print("Cancel: \(assets)")
